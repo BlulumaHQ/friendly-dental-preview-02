@@ -26,36 +26,123 @@ const fadeUp = {
 };
 
 const Index = () => {
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+
+  const handleHeroForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormLoading(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    try {
+      await fetch("https://formspree.io/f/mbdabbql", {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
+      });
+      setFormSubmitted(true);
+      form.reset();
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative h-[70vh] min-h-[500px] flex items-center overflow-hidden">
+      <section className="relative min-h-[600px] md:min-h-[70vh] flex items-center overflow-hidden py-16 md:py-0">
         <div className="absolute inset-0">
           <img src={heroImg} alt="Friendly Dental Centre" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-foreground/60" />
+          <div className="absolute inset-0 bg-foreground/65" />
         </div>
         <div className="relative container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-2xl"
-          >
-            <p className="text-secondary uppercase tracking-[0.2em] text-sm mb-4 font-sans font-medium">
-              Richmond Dental Professionals
-            </p>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display text-background leading-tight mb-6">
-              dental<br />
-              for the<br />
-              people.
-            </h1>
-            <Link
-              to="/contact"
-              className="inline-block bg-primary text-primary-foreground px-8 py-3 text-sm font-sans font-medium tracking-wide hover:opacity-90 transition-opacity rounded-sm"
+          <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+            {/* Left – Text */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              Book an Appointment
-            </Link>
-          </motion.div>
+              <p className="text-secondary uppercase tracking-[0.2em] text-sm mb-4 font-sans font-medium">
+                Richmond Dental Professionals
+              </p>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display text-background leading-tight mb-6">
+                dental<br />
+                for the<br />
+                people.
+              </h1>
+              <p className="text-background/80 text-base md:text-lg font-sans leading-relaxed max-w-md">
+                Our friendly team is committed to providing you with personalized care in a warm and welcoming environment.
+              </p>
+            </motion.div>
+
+            {/* Right – Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="bg-background/95 backdrop-blur-sm rounded-sm p-6 md:p-8 shadow-xl"
+            >
+              <h2 className="text-xl md:text-2xl font-display text-foreground mb-1">Book an Appointment</h2>
+              <p className="text-muted-foreground text-sm mb-5">Fill out the form and we'll get back to you shortly.</p>
+
+              {formSubmitted ? (
+                <div className="text-center py-8">
+                  <p className="text-primary font-medium text-lg mb-1">Thank you!</p>
+                  <p className="text-muted-foreground text-sm">We'll be in touch soon.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleHeroForm} className="space-y-3">
+                  <input type="hidden" name="site_name" value="Friendly Dental Centre" />
+                  <input type="hidden" name="client_name" value="Friendly Dental Centre" />
+                  <input type="hidden" name="mode" value="2" />
+                  <input type="hidden" name="source_url" value="https://friendlydental.ca/" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      name="first_name"
+                      placeholder="First Name"
+                      required
+                      className="w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <input
+                      name="last_name"
+                      placeholder="Last Name"
+                      required
+                      className="w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    required
+                    className="w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="Phone Number"
+                    className="w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <textarea
+                    name="message"
+                    placeholder="How can we help you?"
+                    rows={3}
+                    className="w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={formLoading}
+                    className="w-full bg-primary text-primary-foreground py-3 text-sm font-sans font-medium tracking-wide hover:opacity-90 transition-opacity rounded-sm disabled:opacity-50"
+                  >
+                    {formLoading ? "Sending..." : "Request Appointment"}
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </div>
         </div>
       </section>
 
