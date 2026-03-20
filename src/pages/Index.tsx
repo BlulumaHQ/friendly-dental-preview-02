@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
 import heroImg from "@/assets/hero-dental.jpg";
 import officeImg from "@/assets/office-interior.jpg";
 import treatmentImg from "@/assets/treatment-room.jpg";
